@@ -1,19 +1,16 @@
 import React, {FC} from 'react';
-import { ProductItem } from '@types/dto';
+import { ProductItem } from '@type/dto';
 import Image from 'next/image'
 
 
 type Props = {
-  products: ProductItem[],
-  isLoading: boolean
+  products: ProductItem[]
 }
 
-const List:FC<Props> = ({products, isLoading}) => {
+const List:FC<Props> = ({products}) => {
   return (
     <section>
       <ul>
-      {!isLoading ? (
-        <>
         {products.map((item, index) => 
           <li key={index}>
             <section>
@@ -28,10 +25,6 @@ const List:FC<Props> = ({products, isLoading}) => {
             </section>
           </li>
         )}
-        </>
-      ) : (
-        <li>Loading...</li>
-      )}
       </ul>
     </section>
   )

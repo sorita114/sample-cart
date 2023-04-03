@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, createContext } from 'react';
-import { ProductItem } from '@types/dto';
+import { ProductItem } from '@type/dto';
 
 type Props = { children: ReactNode };
 

@@ -1,63 +1,75 @@
-import { useRouter } from 'next/router';
-import React, {FC, useEffect, useState, useRef} from 'react';
+import { useRouter, withRouter } from 'next/router';
+import React, {FC, useCallback, useEffect, useState } from 'react';
 import List from '@pages/products/components/list';
-import { ProductItem } from '@types/dto';
+import { ProductItem } from '@type/dto';
 import axios from 'axios';
 import { useQuery } from 'react-query';
+import Spinner from '@/@components/spinner';
 
 const Products: FC= () => {
-  const [index, setIndex] = useState<number>(0)
+  const [page, setPage] = useState<number>(0)
   const [limit, setLimit] = useState<number>(5)
   const [products, setProducts] = useState<ProductItem[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [totalCount, setTotalCount] = useState<number>(0)
   const router = useRouter();
-  const $ref = useRef<HTMLElement>(null)
 
-  const {isLoading, data} = useQuery<ProductItem[], Error>([`/products?index=${index}&limit=${limit}`], () => {
-    return axios.get('/datas/products.json').then((res) => res.data)
+  useQuery<ProductItem[], Error>([`/products?page=${page}&limit=${limit}`], () => {
+    return axios.get(`/datas/products.json?page=${page}&limit=${limit}`).then((res) => res.data)
   }, {
-    enabled: !!router,
+    onSuccess: async (res) => {
+      await setIsLoading(true)
+      await setProducts((prev) => {
+        const start = (page - 1) * limit;
+        const end = start + limit;
+
+        const _next: ProductItem[] = res.slice(start, end)
+        return prev.concat(_next)
+      })
+
+      await setTotalCount(res.length)
+      await setIsLoading(false)
+    },
+    enabled: page > 0
   })
+  
+  const handlerIntersect: IntersectionObserverCallback  = ([{isIntersecting }]) => {
+    if(isIntersecting && !isLoading) {
+      if(!isEnd()) {
+        setIsLoading(true)
+        router.push(`/products?page=${page + 1}&limit=${limit}`, undefined, {scroll: false})
+      }
+    }
+  }
+
+  const isEnd = () => {
+    return products.length === totalCount
+  }
 
   useEffect(() => {
-    if(router) {
-      const {index, limit} = router.query;
+    if(page === 0) {
+      router.push(`/products?page=${page + 1}&limit=${limit}`, undefined, {scroll: false})
+    }
+  }, [])
 
-      setIndex(Number(index));
-      setLimit(Number(limit));
+  useEffect(() => {
+    if(router && router.query) {
+
+      const {page, limit} = router.query;
+
+      setPage(page ? Number(page) : 0)
+      setLimit(limit ? Number(limit) : 5)
     }
   }, [router])
 
-  useEffect(() => {
-    if(data) {
-      setProducts((prev) => {
-        const start = index * limit;
-        const end = start + limit;
-
-        const _next: ProductItem[] = data.slice(start, end)
-        return prev.concat(_next)
-      })
-    }
-  }, [data, index, limit]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const { scrollTop, offsetHeight } = document.documentElement
-      if (window.innerHeight + scrollTop >= offsetHeight) {
-        if(data && data.length <= index * limit) {
-          return;
-        }
-        router.push(`/products?index=${index + 1}&limit=${limit}`, undefined, {scroll: false})
-      }
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [index, data])
-
   return (
-    <section ref={$ref}>
-      <List products={products} isLoading={isLoading}/>
+    <section>
+      <List products={products} />
+      {!isLoading && !isEnd() && (
+        <Spinner<ProductItem[]> onIntersect={handlerIntersect} page={page} data={products} />
+      )}
     </section>
   )
 }
 
-export default Products
+export default withRouter(Products)

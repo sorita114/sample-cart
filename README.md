@@ -8,7 +8,7 @@ yarn dev
 pnpm dev
 ```
 
-## Library
+## Module
 
-Next.js(https://nextjs.org/)
+Next.js(https://nextjs.org/)  
 React Query(https://tanstack.com/query/latest)

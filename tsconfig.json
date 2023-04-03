@@ -24,7 +24,11 @@
       "@types": ["./@types"],
       "@types/*": ["./@types/*"],
       "@styles": ["./@styles"],
-      "@styles/*": ["./@styles/*"]
+      "@styles/*": ["./@styles/*"],
+      "@hooks": ["./@hooks"],
+      "@hooks/*": ["./@hooks/*"],
+      "@components": ["./@components"],
+      "@components/*": ["./@components/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

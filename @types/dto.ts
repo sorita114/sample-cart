@@ -3,7 +3,8 @@ export type ProductItem = {
   item_name: string,
   detail_image_url: string,
   price: number,
-  score: number
+  score: number,
+  availableCoupon?: boolean,
 }
 
 export type ProductItemsResult = ProductItem[]

@@ -1,9 +1,9 @@
-export const enum ERROR_TYPE {
+export const enum ErrorType{
   EMPTY = 'empty',
   MIN = 'min'
-};
+}
 
 export type ErrorMessage = {
-  type: ERROR_TYPE,
-  message: string
+  'type': ErrorType,
+  'message': string
 };

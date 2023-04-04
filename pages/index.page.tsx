@@ -1,14 +1,12 @@
-import { FC } from 'react';
+import type { FC } from 'react';
 import Link from 'next/link';
 
-const Home: FC = () => {
-  return (
-      <main>
-        <Link href='/products'>
+const Home:FC = () => (
+  <main>
+    <Link href="/products">
           /products
-        </Link>
-      </main>
-  )
-}
+    </Link>
+  </main>
+);
 
 export default Home;

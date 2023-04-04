@@ -15,8 +15,8 @@ const useProducts = ({ page, limit }:Props) => {
 
   useQuery<ProductItemsResult, Error>([ `/products?page=${page}&limit=${limit}` ], () => axios.get(`/datas/products.json?page=${page}&limit=${limit}`).then(res => res.data), {
     onSuccess: async res => {
-      await setIsLoading(true);
-      await setProducts(prev => {
+      await void setIsLoading(true);
+      await void setProducts(prev => {
         const start = (page - 1) * limit;
         const end = start + limit;
 
@@ -24,8 +24,8 @@ const useProducts = ({ page, limit }:Props) => {
         return prev.concat(item);
       });
 
-      await setTotalCount(res.length);
-      await setIsLoading(false);
+      await void setTotalCount(res.length);
+      await void setIsLoading(false);
     },
     enabled: page > 0
   });

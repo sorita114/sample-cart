@@ -3,7 +3,9 @@
   "rules": {
     "semi": [2, "always"],
     "linebreak-style": 0,
-    "@typescript-eslint/no-confusing-void-expression": false
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/no-confusing-void-expression": "error"
   },
   "plugins": ["@jjoriping/eslint-plugin"],
   "parserOptions": {

@@ -6,8 +6,8 @@ import { GlobalMyCartContext } from '@pages/_app.page';
 import type { PaymentItem, Coupons } from '@type/dto';
 import useCoupon from '@hooks/use-coupon';
 import type { ErrorMessage } from '@type/erros';
-import { ERROR_TYPE } from '@type/erros';
-import { COUPON_TYPE } from '@/@type/coupon';
+import { ErrorType } from '@type/erros';
+import { CouponType } from '@/@type/coupon';
 
 const Cart:FC = () => {
   const { myCarts, setMyCarts } = useContext(GlobalMyCartContext);
@@ -30,7 +30,7 @@ const Cart:FC = () => {
 
     if(!value){
       setErrors({
-        type: ERROR_TYPE.MIN,
+        type: ErrorType.MIN,
         message: '최소 1개이상 주문이 가능합니다.'
       });
       return;
@@ -47,9 +47,9 @@ const Cart:FC = () => {
 
   const totalPrice = (item:PaymentItem, coupon:Coupons):number => {
     switch(coupon.type){
-      case COUPON_TYPE.AMOUNT:
+      case CouponType.AMOUNT:
         return item.totalPrice - Number(coupon?.discountAmount);
-      case COUPON_TYPE.RATE:
+      case CouponType.RATE:
         return item.totalPrice * ((100 - Number(coupon?.discountRate)) / 100);
       default:
         return item.price;
@@ -89,8 +89,7 @@ const Cart:FC = () => {
       <header>
         <h1>My Cart</h1>
       </header>
-      {myCarts?.length
-        ? (
+      {myCarts?.length ? (
         <>
           <section>
             <ul>
@@ -113,22 +112,22 @@ const Cart:FC = () => {
                       <input
                         type="text" value={payment.counts}
                         onChange={e => handleChangeCount(e, payment)}
-                        className={errors?.type === ERROR_TYPE.MIN ? 'error' : ''}
+                        className={errors?.type === ErrorType.MIN ? 'error' : ''}
                       />
                       <select
                         onChange={e => handelSelectCoupon(e, payment)}
                         disabled={payment.availableCoupon}
 
                       >
-                        <option value={JSON.stringify({ type: COUPON_TYPE.EMPTY, title: '', discountRate: 0 })}>쿠폰을 선택해주세요.</option>
-                        {coupons && coupons.map((coupon, index) => (
-                          <option key={index} value={JSON.stringify(coupon)}>
+                        <option value={JSON.stringify({ type: CouponType.EMPTY, title: '', discountRate: 0 })}>쿠폰을 선택해주세요.</option>
+                        {coupons && coupons.map((coupon, idx) => (
+                          <option key={idx} value={JSON.stringify(coupon)}>
                             {coupon.title}
                           </option>
                         ))}
                       </select>
                     </div>
-                    {errors && errors.type === ERROR_TYPE.MIN && (
+                    {errors && errors.type === ErrorType.MIN && (
                       <p>
                         <span>{errors.message}</span>
                       </p>
@@ -144,8 +143,7 @@ const Cart:FC = () => {
             </strong>
           </footer>
         </>
-      )
-        : (
+      ) : (
         <div>
           <p>
             장바구니에 상품이 없습니다.

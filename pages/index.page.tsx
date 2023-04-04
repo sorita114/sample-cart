@@ -1,6 +1,5 @@
-import React, {FC} from 'react'
-import Products from '@pages/products/index.page'
-import Link from 'next/link'
+import { FC } from 'react';
+import Link from 'next/link';
 
 const Home: FC = () => {
   return (
@@ -12,4 +11,4 @@ const Home: FC = () => {
   )
 }
 
-export default Home
+export default Home;

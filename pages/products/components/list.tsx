@@ -1,6 +1,6 @@
-import React, {FC, useContext} from 'react';
+import { FC, useContext } from 'react';
 import { ProductItem } from '@type/dto';
-import Image from 'next/image'
+import Image from 'next/image';
 import { GlobalMyCartContext } from '@pages/_app.page';
 
 

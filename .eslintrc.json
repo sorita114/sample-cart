@@ -1,6 +1,12 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next/core-web-vitals", "plugin:@jjoriping/eslint-plugin/all"],
   "rules": {
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "linebreak-style": 0,
+    "@typescript-eslint/no-confusing-void-expression": false
+  },
+  "plugins": ["@jjoriping/eslint-plugin"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
   }
 }

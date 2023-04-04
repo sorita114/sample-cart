@@ -1,5 +1,5 @@
 import Nav from '@components/nav';
-import React, { FC, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 
 type Props = { children: ReactNode };
 
@@ -12,4 +12,4 @@ const DefaultLayout: FC<Props> = ({children}) => {
   )
 }
 
-export default DefaultLayout
+export default DefaultLayout;

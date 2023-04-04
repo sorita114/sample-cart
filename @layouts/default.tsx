@@ -1,19 +1,14 @@
-import React, { FC, ReactNode, createContext } from 'react';
-import { ProductItem } from '@type/dto';
+import Nav from '@components/nav';
+import React, { FC, ReactNode } from 'react';
 
 type Props = { children: ReactNode };
 
-const MyCartContext = createContext<ProductItem[]>([])
-
-const MyCartProvider: FC<Props> = ({children}) => {
-  return <MyCartContext.Provider value={[]}>{children}</MyCartContext.Provider>
-}
-
 const DefaultLayout: FC<Props> = ({children}) => {
   return (
-    <MyCartProvider>
-      <main>{children}</main>
-    </MyCartProvider>
+    <main>
+      <Nav />
+      {children}
+    </main>
   )
 }
 

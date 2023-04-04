@@ -29,7 +29,11 @@
       "@hooks/*": ["./@hooks/*"],
       "@components": ["./@components"],
       "@components/*": ["./@components/*"],
-    }
+      "@context": ["./@context"],
+      "@context/*": ["./@context/*"],
+    },
+    "types": ["@emotion/react/types/css-prop"],
+    "jsxImportSource": "@emotion/react"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

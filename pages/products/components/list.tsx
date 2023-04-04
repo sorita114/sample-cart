@@ -1,6 +1,7 @@
-import React, {FC} from 'react';
+import React, {FC, useContext} from 'react';
 import { ProductItem } from '@type/dto';
 import Image from 'next/image'
+import { GlobalMyCartContext } from '@pages/_app.page';
 
 
 type Props = {
@@ -8,8 +9,29 @@ type Props = {
 }
 
 const List:FC<Props> = ({products}) => {
+  const {myCarts, setMyCarts} = useContext(GlobalMyCartContext);
+
+  const isAddCart = (item: ProductItem) => {
+    return myCarts?.find((cart) => cart.item_no === item.item_no);
+  }
+
+  const handleClick = (value: ProductItem) => {
+    if(isAddCart(value)) {
+      const _mycart: ProductItem[] = myCarts?.filter((cart) => cart.item_no !== value.item_no) || [];
+
+      setMyCarts && setMyCarts(_mycart)
+    } else {
+      setMyCarts && setMyCarts((prev) => {
+        return [
+          ...prev,
+          value
+        ]
+      })
+    }
+  }
+
   return (
-    <section>
+    <section key={myCarts?.length}>
       <ul>
         {products.map((item, index) => 
           <li key={index}>
@@ -20,7 +42,7 @@ const List:FC<Props> = ({products}) => {
               <header>{item.item_name}</header>
               <div>
                 <strong>{item.price}</strong>
-                <button>123</button>
+                <button onClick={() => handleClick(item)}>{`${isAddCart(item) ? "장바구니 제거" : "장바구니담기"}`}</button>
               </div>
             </section>
           </li>

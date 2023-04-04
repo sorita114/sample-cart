@@ -1,6 +1,6 @@
-import { ProductItem } from '@type/dto';
+import { ProductItemsResult, ProductItem } from '@type/dto';
 import axios from 'axios';
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from 'react-query';
 
 type Props = {
@@ -13,7 +13,7 @@ const useProducts = ({page, limit}: Props) => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0)
 
-  useQuery<ProductItem[], Error>([`/products?page=${page}&limit=${limit}`], () => {
+  useQuery<ProductItemsResult, Error>([`/products?page=${page}&limit=${limit}`], () => {
     return axios.get(`/datas/products.json?page=${page}&limit=${limit}`).then((res) => res.data)
   }, {
     onSuccess: async (res) => {
@@ -22,7 +22,7 @@ const useProducts = ({page, limit}: Props) => {
         const start = (page - 1) * limit;
         const end = start + limit;
 
-        const _next: ProductItem[] = res.slice(start, end)
+        const _next: ProductItem[] = res.sort((prev, next) => next.score - prev.score).slice(start, end)
         return prev.concat(_next)
       })
 

@@ -15,6 +15,10 @@ const List:FC<Props> = ({products}) => {
     return myCarts?.find((cart) => cart.item_no === item.item_no);
   }
 
+  const disabledAddCart = () => {
+    return myCarts ? myCarts.length >= 3 : false
+  }
+
   const handleClick = (value: ProductItem) => {
     if(isAddCart(value)) {
       const _mycart: ProductItem[] = myCarts?.filter((cart) => cart.item_no !== value.item_no) || [];
@@ -30,6 +34,7 @@ const List:FC<Props> = ({products}) => {
     }
   }
 
+
   return (
     <section key={myCarts?.length}>
       <ul>
@@ -42,7 +47,7 @@ const List:FC<Props> = ({products}) => {
               <header>{item.item_name}</header>
               <div>
                 <strong>{item.price}</strong>
-                <button onClick={() => handleClick(item)}>{`${isAddCart(item) ? "장바구니 제거" : "장바구니담기"}`}</button>
+                <button onClick={() => handleClick(item)} disabled={!isAddCart(item) && disabledAddCart()}>{`${isAddCart(item) ? "장바구니 제거" : "장바구니담기"}`}</button>
               </div>
             </section>
           </li>

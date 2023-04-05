@@ -9,7 +9,7 @@ type Props = {
 };
 
 const useProducts = ({ page, limit }:Props) => {
-  const [ isLoading, setIsLoading ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(true);
   const [ products, setProducts ] = useState<ProductItem[]>([]);
   const [ totalCount, setTotalCount ] = useState<number>(0);
 
@@ -25,7 +25,10 @@ const useProducts = ({ page, limit }:Props) => {
       });
 
       await void setTotalCount(res.length);
-      await void setIsLoading(false);
+      // NOTE loading UI 표시를 위해서 delay 추가
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     },
     enabled: page > 0
   });

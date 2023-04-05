@@ -44,8 +44,11 @@ const styled = css({
   height: 50,
   display: 'flex',
   alignItems: 'center',
+  position: 'sticky',
+  top: 0,
+  backgroundColor: theme.colors.white,
   '.linker': {
-    fontSize: '1.5rem',
+    fontSize: '1.1rem',
     textDecoration: 'none',
     color: `${theme.colors.black}`,
     padding: '10px 0',

@@ -7,12 +7,14 @@ import type { PaymentItem, Coupons } from '@type/dto';
 import useCoupon from '@hooks/use-coupon';
 import type { ErrorMessage } from '@type/erros';
 import { ErrorType } from '@type/erros';
-import { CouponType } from '@/@type/coupon';
+import { CouponType } from '@type/coupon';
+import theme from '@styles/theme';
+import currency from '@utils/currency';
 
 const Cart:FC = () => {
-  const { myCarts, setMyCarts } = useContext(GlobalMyCartContext);
+  const { myCarts, } = useContext(GlobalMyCartContext);
   const [ payments, setPayments ] = useState<PaymentItem[]>([]);
-  const [ errors, setErrors ] = useState<ErrorMessage>();
+  const [ errors, setErrors ] = useState<ErrorMessage | undefined>();
   const { coupons } = useCoupon();
 
   const handleAddPayment = (e:ChangeEvent<HTMLInputElement>, item:PaymentItem) => {
@@ -36,6 +38,8 @@ const Cart:FC = () => {
       return;
     }
 
+    setErrors(undefined);
+
     setPayments(prev => prev.map(v => ({
       ...v,
       counts: v.item_no === item.item_no ? Number(value) : v.counts,
@@ -56,7 +60,14 @@ const Cart:FC = () => {
     }
   };
 
-  const paymentTotalPrice = ():number => payments.filter(value => value.isPayment).reduce((pv, current) => pv + current.totalPrice, 0);
+  const paymentTotalPrice = ():string => {
+    const items = payments.filter(value => value.isPayment);
+    if(items.length === 0) {
+      return currency(0);
+    }
+    const total = items.reduce((pv, current) => pv + current.totalPrice, 0);
+    return `${items.reduce((prv, cur) => prv = `${prv ? prv + ' + ' : ''}${currency(cur.totalPrice)}`, '')} = ${currency(total)}`;
+  };
 
   const handelSelectCoupon = (e:ChangeEvent<HTMLSelectElement>, item:PaymentItem) => {
     const { value } = e.target;
@@ -96,55 +107,64 @@ const Cart:FC = () => {
               {payments.map((payment, index) => (
                 <li key={`${index}_${payment.item_no}`}>
                   <section>
-                    <header>
-                      <input
-                        type="checkbox"
-                        name="cartItem"
-                        onChange={e => handleAddPayment(e, payment)}
-                      />
-                    </header>
+                    <input
+                      type="checkbox"
+                      name="cartItem"
+                      onChange={e => handleAddPayment(e, payment)}
+                      checked={payment.isPayment}
+                    />
                     <div>
-                      <Image src={payment.detail_image_url} alt={payment.item_name} width={500} height={500} />
+                      <Image src={payment.detail_image_url} alt={payment.item_name} width={150} height={150} />
                     </div>
-                    <header>{payment.item_name}</header>
-                    <div>
-                      <strong>{payment.price}</strong>
-                      <input
-                        type="text" value={payment.counts}
-                        onChange={e => handleChangeCount(e, payment)}
-                        className={errors?.type === ErrorType.MIN ? 'error' : ''}
-                      />
-                      <select
-                        onChange={e => handelSelectCoupon(e, payment)}
-                        disabled={payment.availableCoupon}
+                    <div className="information">
+                      <header>{payment.item_name}</header>
+                      <div>
+                        <input
+                          type="text" value={payment.counts}
+                          onChange={e => handleChangeCount(e, payment)}
+                          className={errors?.type === ErrorType.MIN ? 'error' : ''}
+                        />
+                        <strong>{currency(payment.price)}</strong>
+                      </div>
+                      {errors && errors.type === ErrorType.MIN && (
+                          <p className='error'>
+                            <span>{errors.message}</span>
+                          </p>
+                        )}
+                      <div className="coupon-box">
+                        <p>
+                          <span>예상 할인 금액 : </span>
+                          <strong>{currency(payment.totalPrice - payment.price)}</strong>
+                        </p>
+                        <select
+                          onChange={e => handelSelectCoupon(e, payment)}
+                          disabled={payment.availableCoupon}
 
-                      >
-                        <option value={JSON.stringify({ type: CouponType.EMPTY, title: '', discountRate: 0 })}>쿠폰을 선택해주세요.</option>
-                        {coupons && coupons.map((coupon, idx) => (
-                          <option key={idx} value={JSON.stringify(coupon)}>
-                            {coupon.title}
-                          </option>
-                        ))}
-                      </select>
+                        >
+                          <option value={JSON.stringify({ type: CouponType.EMPTY, title: '', discountRate: 0 })}>쿠폰을 선택해주세요.</option>
+                          {coupons && coupons.map((coupon, idx) => (
+                            <option key={idx} value={JSON.stringify(coupon)}>
+                              {coupon.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                    {errors && errors.type === ErrorType.MIN && (
-                      <p>
-                        <span>{errors.message}</span>
-                      </p>
-                    )}
                   </section>
                 </li>
               ))}
             </ul>
           </section>
           <footer>
+            <span>총 {payments.filter(value => value.isPayment).length} 개</span>
+            <span>|</span>
             <strong>
               {paymentTotalPrice()}
             </strong>
           </footer>
         </>
       ) : (
-        <div>
+        <div className='empty'>
           <p>
             장바구니에 상품이 없습니다.
           </p>
@@ -158,7 +178,85 @@ const Cart:FC = () => {
 };
 
 const styled = css({
-  '.error': {}
+  'h1': {
+    fontWeight: 'bold',
+    fontSize: `${theme.fontSize.large}`,
+    margin: '10px 0'
+  },
+  'ul': {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    gap: 20,
+    '> li': {
+      width: '100%',
+      '> section': {
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 10,
+        '.information': {
+          width: '100%',
+          'header': {
+            margin: '5px 0',
+            fontWeight: 'bold',
+            color: `${theme.colors.gray}`,
+            textDecoration: 'underline'
+          },
+          '> div': {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            'strong': {
+              fontWeight: 'bold'
+            },
+            'input': {
+              '&.error': {
+                marginBottom: 5,
+                border:`1px solid ${theme.colors.error}`
+              }
+            }
+          },
+          '.coupon-box': {
+            marginTop: 10,
+            'strong': {
+              color: `${theme.colors.gray}`
+            }
+          }
+        }
+      }
+    }
+  },
+  'footer': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+    borderTop: `1px solid ${theme.colors.gray}`,
+    fontSize: '1.2rem',
+    bottom: 0,
+    height: 50,
+    gap: 10
+  },
+  '.error': {
+    color: theme.colors.error,
+    fontWeight: 'bold',
+    fontSize: theme.fontSize.small
+  },
+  '.empty': {
+    position: 'absolute',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    fontSize: '1.1rem',
+    color: theme.colors.gray,
+    gap: 30,
+    top: '50%',
+    left: '50%',
+    transfrom: 'translateY(-50%)',
+    transform: 'translateX(-50%) '
+  }
 });
 
 export default Cart;

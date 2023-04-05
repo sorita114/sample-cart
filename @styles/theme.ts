@@ -2,7 +2,8 @@ const theme = {
   colors: {
     black: '#000',
     gray: '#5d5d5d',
-    white: '#fff'
+    white: '#fff',
+    error: '#f44336'
   },
   fontSize: {
     default: '1em',

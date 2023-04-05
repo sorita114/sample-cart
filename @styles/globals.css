@@ -111,6 +111,8 @@ section {
 
 body {
     line-height: 1;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
 }
 
 ol,

@@ -3,8 +3,10 @@ import type { AppProps } from 'next/app';
 import type { Dispatch, SetStateAction } from 'react';
 import { createContext, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ThemeProvider } from '@emotion/react';
 import DefaultLayout from '@layouts/default';
 import type { ProductItem } from '@type/dto';
+import theme from '@styles/theme';
 
 interface IGlobalMyCartContext{
   myCarts?:ProductItem[];
@@ -26,11 +28,13 @@ const App = ({ Component, pageProps }:AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GlobalMyCartContext.Provider value={{ myCarts, setMyCarts }}>
-        <DefaultLayout>
-          <Component {...pageProps} />
-        </DefaultLayout>
-      </GlobalMyCartContext.Provider>
+      <ThemeProvider theme={theme}>
+        <GlobalMyCartContext.Provider value={{ myCarts, setMyCarts }}>
+          <DefaultLayout>
+            <Component {...pageProps} />
+          </DefaultLayout>
+        </GlobalMyCartContext.Provider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

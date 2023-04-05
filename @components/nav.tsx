@@ -1,36 +1,71 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, {FC} from 'react';
+import type { FC } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { css } from '@emotion/react';
+import theme from '@styles/theme';
+import { GlobalMyCartContext } from '@pages/_app.page';
 
 
-const Nav: FC = () => {
+const Nav:FC = () => {
   const router = useRouter();
+  const { myCarts } = useContext(GlobalMyCartContext);
+  const { pathname } = router;
+  const [categories, setCategories] = useState<{name: string, url: string}[]>([]);
 
   const handleMyCart = () => {
-    router.push('/cart')
-  }
+    router.push("/cart");
+  };
+
+  useEffect(() => {
+    setCategories([{ name: '상품', url: '/products'}]);
+  }, []);
+
   return (
     <section css={styled}>
       <nav>
-        <Link href='/products' className="linker">
-          상품
-        </Link>
+        {categories.map((category, index) =>(
+          <Link key={index} href={category.url} className={`${pathname.includes("products") ? 'linker active' : 'linker'}`}>
+            {category.name}
+          </Link>
+        ))}
       </nav>
-      <button onClick={() => handleMyCart()}>
+      <button onClick={() => handleMyCart()} className={`${pathname.includes("cart") ? 'linker active' : 'linker'}`}>
         <span>My Cart</span>
+        {Boolean(myCarts?.length) && (
+          <span>{myCarts?.length}</span>
+        )}
       </button>
     </section>
-  )
-}
+  );
+};
 
 const styled = css({
+  height: 50,
   display: 'flex',
-  '.liner': {
-    textDecoration: 'none'
+  alignItems: 'center',
+  '.linker': {
+    fontSize: '1.5rem',
+    textDecoration: 'none',
+    color: `${theme.colors.black}`,
+    padding: '10px 0',
+    '&:hover': {
+      fontWeight: 'bold',
+      borderBottom: `2px solid ${theme.colors.black}`
+    },
+    '&.active': {
+      fontWeight: 'bold',
+      borderBottom: `2px solid ${theme.colors.black}`
+    }
   },
-  'button': {
-    marginLeft: 'auto'
+  '> button': {
+    marginLeft: 'auto',
+    fontSize: '1rem',
+    backgroundColor: `${theme.colors.white}`,
+    border: 0,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5
   }
-})
-export default Nav
+});
+export default Nav;

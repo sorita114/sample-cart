@@ -31,6 +31,8 @@
       "@components/*": ["./@components/*"],
       "@context": ["./@context"],
       "@context/*": ["./@context/*"],
+      "@utils": ["./@utils"],
+      "@utils/*": ["./@utils/*"]
     },
     "types": ["@emotion/react/types/css-prop"],
     "jsxImportSource": "@emotion/react"

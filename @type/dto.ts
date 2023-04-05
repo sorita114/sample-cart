@@ -19,7 +19,8 @@ export type Coupons = {
 type Payment = {
   'counts': number,
   'isPayment': boolean,
-  'totalPrice': number
+  'totalPrice': number,
+  'couponType': CouponType,
 };
 
 export type PaymentItem = ProductItem&Payment;

@@ -12,9 +12,9 @@ import theme from '@styles/theme';
 import currency from '@utils/currency';
 
 const Cart:FC = () => {
-  const { myCarts, } = useContext(GlobalMyCartContext);
+  const { myCarts } = useContext(GlobalMyCartContext);
   const [ payments, setPayments ] = useState<PaymentItem[]>([]);
-  const [ errors, setErrors ] = useState<ErrorMessage | undefined>();
+  const [ errors, setErrors ] = useState<ErrorMessage|undefined>();
   const { coupons } = useCoupon();
 
   const handleAddPayment = (e:ChangeEvent<HTMLInputElement>, item:PaymentItem) => {
@@ -43,38 +43,41 @@ const Cart:FC = () => {
     setPayments(prev => prev.map(v => ({
       ...v,
       counts: v.item_no === item.item_no ? Number(value) : v.counts,
-      totalPrice: v.item_no === item.item_no ? Number(value) * item.price : v.counts * v.price
+      totalPrice: v.item_no === item.item_no ? totalPrice(Number(value) * item.price, v.couponType) : totalPrice(v.counts * v.price, v.couponType)
     })
     )
     );
   };
 
-  const totalPrice = (item:PaymentItem, coupon:Coupons):number => {
-    switch(coupon.type){
+  const totalPrice = (price:number, couponType:CouponType):number => {
+    const coupon = coupons?.find(v => v.type === couponType);
+    switch(couponType){
       case CouponType.AMOUNT:
-        return item.totalPrice - Number(coupon?.discountAmount);
+        return price - Number(coupon?.discountAmount);
       case CouponType.RATE:
-        return item.totalPrice * ((100 - Number(coupon?.discountRate)) / 100);
+        return price * ((100 - Number(coupon?.discountRate)) / 100);
       default:
-        return item.price;
+        return price;
     }
   };
 
   const paymentTotalPrice = ():string => {
     const items = payments.filter(value => value.isPayment);
-    if(items.length === 0) {
+    if(items.length === 0){
       return currency(0);
     }
     const total = items.reduce((pv, current) => pv + current.totalPrice, 0);
-    return `${items.reduce((prv, cur) => prv = `${prv ? prv + ' + ' : ''}${currency(cur.totalPrice)}`, '')} = ${currency(total)}`;
+    return `${items.reduce((prv, current) => prv = `${prv ? prv + ' + ' : ''}${currency(current.totalPrice)}`, "")} = ${currency(total)}`;
   };
 
   const handelSelectCoupon = (e:ChangeEvent<HTMLSelectElement>, item:PaymentItem) => {
     const { value } = e.target;
+    const couponType:CouponType = value as CouponType;
 
     setPayments(prev => prev.map(v => ({
       ...v,
-      totalPrice: v.item_no === item.item_no ? totalPrice(item, JSON.parse(value)) : v.totalPrice
+      totalPrice: v.item_no === item.item_no ? totalPrice(item.price * item.counts, couponType) : v.totalPrice,
+      couponType
     })
     )
     );
@@ -86,7 +89,8 @@ const Cart:FC = () => {
         ...cart,
         counts: 1,
         isPayment: false,
-        totalPrice: cart.price
+        totalPrice: cart.price,
+        couponType: CouponType.EMPTY
       })
       )
 ;
@@ -100,7 +104,8 @@ const Cart:FC = () => {
       <header>
         <h1>My Cart</h1>
       </header>
-      {myCarts?.length ? (
+      {myCarts?.length
+        ? (
         <>
           <section>
             <ul>
@@ -127,23 +132,24 @@ const Cart:FC = () => {
                         <strong>{currency(payment.price)}</strong>
                       </div>
                       {errors && errors.type === ErrorType.MIN && (
-                          <p className='error'>
-                            <span>{errors.message}</span>
-                          </p>
-                        )}
+                        <p className="error">
+                          <span>{errors.message}</span>
+                        </p>
+                      )
+                      }
                       <div className="coupon-box">
                         <p>
                           <span>예상 할인 금액 : </span>
-                          <strong>{currency(payment.totalPrice - payment.price)}</strong>
+                          <strong>{currency(payment.totalPrice - (payment.price * payment.counts))}</strong>
                         </p>
                         <select
                           onChange={e => handelSelectCoupon(e, payment)}
                           disabled={payment.availableCoupon}
 
                         >
-                          <option value={JSON.stringify({ type: CouponType.EMPTY, title: '', discountRate: 0 })}>쿠폰을 선택해주세요.</option>
-                          {coupons && coupons.map((coupon, idx) => (
-                            <option key={idx} value={JSON.stringify(coupon)}>
+                          <option value={CouponType.EMPTY}>쿠폰을 선택해주세요.</option>
+                          {coupons && coupons.map((coupon, j) => (
+                            <option key={j} value={coupon.type}>
                               {coupon.title}
                             </option>
                           ))}
@@ -163,8 +169,9 @@ const Cart:FC = () => {
             </strong>
           </footer>
         </>
-      ) : (
-        <div className='empty'>
+      )
+        : (
+        <div className="empty">
           <p>
             장바구니에 상품이 없습니다.
           </p>
@@ -213,7 +220,7 @@ const styled = css({
             'input': {
               '&.error': {
                 marginBottom: 5,
-                border:`1px solid ${theme.colors.error}`
+                border: `1px solid ${theme.colors.error}`
               }
             }
           },

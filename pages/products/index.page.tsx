@@ -11,12 +11,11 @@ const Products:FC = () => {
   const [ limit, setLimit ] = useState<number>(5);
   const router = useRouter();
 
-  const { isLoading, products, setIsLoading, totalCount } = useProducts({ page, limit });
+  const { products, totalCount } = useProducts({ page, limit });
 
   const handlerIntersect:IntersectionObserverCallback = ([{ isIntersecting }]) => {
-    if(isIntersecting && !isLoading){
+    if(isIntersecting){
       if(!isEnd()){
-        setIsLoading(true);
         router.push(`/products?page=${page + 1}&limit=${limit}`, undefined, { scroll: false });
       }
     }
@@ -40,12 +39,14 @@ const Products:FC = () => {
   }, [ router ]);
 
   return (
-    <section>
-      <List products={products} />
-      {isLoading && !isEnd() && (
+    <>
+      <section>
+        <List products={products} />
+      </section>
+      {!isEnd() && (
         <Spinner<ProductItem[]> onIntersect={handlerIntersect} page={page} data={products} />
       )}
-    </section>
+    </>
   );
 };
 

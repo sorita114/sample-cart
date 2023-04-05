@@ -27,10 +27,9 @@ const Spinner = <T, >({ onIntersect, page, data }:Props<T>) => {
 };
 // NOTE: 출처 : https://loading.io/css/
 const styled = css({
-  position: 'fixed',
-  bottom: 0,
-  left: '50%',
-  transform: 'translateX(-50%)',
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'center',
   '.lds-ellipsis': {
     display: 'inline-block',
     position: 'relative',

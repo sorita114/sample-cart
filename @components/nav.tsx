@@ -24,13 +24,13 @@ const Nav:FC = () => {
   return (
     <section css={styled}>
       <nav>
-        {categories.map((category, index) =>(
+        {categories.map((category, index) => (
           <Link key={index} href={category.url} className={`${pathname.includes("products") ? 'linker active' : 'linker'}`}>
             {category.name}
           </Link>
         ))}
       </nav>
-      <button onClick={() => handleMyCart()} className={`${pathname.includes("cart") ? 'linker active' : 'linker'}`}>
+      <button onClick={() => handleMyCart()} className={`${pathname.includes("cart") ? 'active' : ''}`}>
         <span>My Cart</span>
         {Boolean(myCarts?.length) && (
           <span>{myCarts?.length}</span>
@@ -60,12 +60,21 @@ const styled = css({
   },
   '> button': {
     marginLeft: 'auto',
-    fontSize: '1rem',
+    fontSize: '0.9rem',
     backgroundColor: `${theme.colors.white}`,
-    border: 0,
+    border: `1px solid ${theme.colors.black}`,
     display: 'flex',
     alignItems: 'center',
-    gap: 5
+    padding: '5px 10px',
+    gap: 5,
+    '&:hover': {
+      fontWeight: 'bold',
+      border: `1px solid ${theme.colors.black}`
+    },
+    '&.active': {
+      fontWeight: 'bold',
+      border: `2px solid ${theme.colors.black}`
+    }
   }
 });
 export default Nav;

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { ProductItem } from '@type/dto';
 import { GlobalMyCartContext } from '@pages/_app.page';
 import currency from '@utils/currency';
+import theme from '@styles/theme';
 
 type Props = {
   products: ProductItem[]
@@ -36,23 +37,24 @@ const List:FC<Props> = ({ products }) => {
   return (
     <section key={myCarts?.length} css={styled}>
       <ul>
-        {products.map((item, index) => <li key={index}>
-          <section>
-            <div>
-              <Image src={item.detail_image_url} alt={item.item_name} width={250} height={250} />
-            </div>
-            <header>{item.item_name}</header>
-            <div>
-              <strong>{currency(item.price)}</strong>
-              <button onClick={() => handleClick(item)} disabled={!isAddCart(item) && disabledAddCart()}>
-                <span>
-                  {`${isAddCart(item) ? "장바구니 제거" : "장바구니담기"}`}
-                </span>
-              </button>
-            </div>
-          </section>
-        </li>
-        )}
+        {products.map((item, index) => (
+          <li key={index}>
+            <section>
+              <div>
+                <Image src={item.detail_image_url} alt={item.item_name} width={250} height={250} />
+              </div>
+              <header>{item.item_name}</header>
+              <div className="information">
+                <strong>{currency(item.price)}</strong>
+                <button onClick={() => handleClick(item)} disabled={!isAddCart(item) && disabledAddCart()}>
+                  <span>
+                    {`${isAddCart(item) ? "Remove" : "Add"}`}
+                  </span>
+                </button>
+              </div>
+            </section>
+          </li>
+        ))}
       </ul>
     </section>
   );
@@ -67,7 +69,31 @@ const styled = css({
     alignItems: 'center',
     '> li': {
       width: 250,
-      marginBottom: 20
+      marginBottom: 20,
+      'header': {
+        marginTop: 5,
+        fontWeight: 'bold',
+        color: `${theme.colors.gray}`,
+        textDecoration: 'underline'
+      },
+      '.information': {
+        marginTop: 5,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        '> strong': {
+          fontSize: '1.15rem',
+          fontWeight: 'bold'
+        },
+        '> button': {
+          backgroundColor: theme.colors.white,
+          border: `1px solid ${theme.colors.black}`,
+          padding: '5px 10px',
+          '&:hover': {
+            fontWeight: 'bold'
+          }
+        }
+      }
     }
   }
 });

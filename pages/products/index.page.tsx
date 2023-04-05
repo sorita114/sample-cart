@@ -42,7 +42,7 @@ const Products:FC = () => {
   return (
     <section>
       <List products={products} />
-      {!isLoading && !isEnd() && (
+      {isLoading && !isEnd() && (
         <Spinner<ProductItem[]> onIntersect={handlerIntersect} page={page} data={products} />
       )}
     </section>

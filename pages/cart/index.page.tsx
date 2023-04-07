@@ -67,7 +67,7 @@ const Cart:FC = () => {
       return currency(0);
     }
     const total = items.reduce((pv, current) => pv + current.totalPrice, 0);
-    return `${items.reduce((prv, current) => prv = `${prv ? prv + ' + ' : ''}${currency(current.totalPrice)}`, "")} = ${currency(total)}`;
+    return `${items.reduce((prv, current) => prv = `${prv ? prv + ' + ' : ''}${currency(current.totalPrice < 0 ? 0 : current.totalPrice)}`, "")} = ${currency(total < 0 ? 0 : total)}`;
   };
 
   const handelSelectCoupon = (e:ChangeEvent<HTMLSelectElement>, item:PaymentItem) => {
@@ -144,7 +144,7 @@ const Cart:FC = () => {
                         </p>
                         <select
                           onChange={e => handelSelectCoupon(e, payment)}
-                          disabled={payment.availableCoupon}
+                          disabled={payment.availableCoupon === false}
 
                         >
                           <option value={CouponType.EMPTY}>쿠폰을 선택해주세요.</option>
